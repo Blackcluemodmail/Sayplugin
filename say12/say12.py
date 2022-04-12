@@ -41,7 +41,7 @@ class Suggest(commands.Cog):
         **Usage**:
         [p]suggest more plugins!
         """
-            if str(ctx.author.id) not in self.banlist:
+        if str(ctx.author.id) not in self.banlist:
             async with ctx.channel.typing():
                 config = await self.coll.find_one({"_id": "config"})
                 if config is None:
@@ -69,7 +69,30 @@ class Suggest(commands.Cog):
                         },
                         upsert=True,
                     )
-                    
+          
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def setsuggestchannel(self, ctx, *, channel: discord.TextChannel):
+        """
+        Set the channel where suggestions go.
+
+        **Usage**:
+        [p]setsuggestchannel #suggestions
+        [p]ssc suggestions
+        [p]ssc 515085600047628288
+        """
+        await self.coll.find_one_and_update(
+            {"_id": "config"},
+            {"$set": {"suggestion-channel": {"channel": str(channel.id)}}},
+            upsert=True,
+        )
+        embed = discord.Embed(
+            title=f"Set suggestion channel to #{channel}.", color=0x4DFF73
+        )
+        embed.set_author(name="Success!")
+        embed.set_footer(text="Task succeeded successfully.")
+        await ctx.send(embed=embed)
+          
    
 def setup(bot):
     bot.add_cog(Suggest(bot))
