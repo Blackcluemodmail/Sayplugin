@@ -58,13 +58,13 @@ class Say(commands.Cog):
                     suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
                     next_id = suggestions.get("next_id", 1)
 
-                    messages = await suggestion_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    msg = await suggestion_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
                     await self.coll.find_one_and_update(
                         {"_id": "suggestions"},
                         {
                             "$set": {
                                 "next_id": next_id + 1,
-                                str(next_id): {"message_id": message.id,},
+                                str(next_id): {"msg_id": msg.id,},
                             }
                         },
                         upsert=True,
