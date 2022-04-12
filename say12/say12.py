@@ -72,7 +72,7 @@ class Say(commands.Cog):
           
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
-    async def setsaychannel(self, ctx, *, channel: discord.TextChannel):
+    async def syc(self, ctx, *, channel: discord.TextChannel):
         """
         Set the channel where suggestions go.
 
@@ -86,13 +86,6 @@ class Say(commands.Cog):
             {"$set": {"suggestion-channel": {"channel": str(channel.id)}}},
             upsert=True,
         )
-        embed = discord.Embed(
-            title=f"Set suggestion channel to #{channel}.", color=0x4DFF73
-        )
-        embed.set_author(name="Success!")
-        embed.set_footer(text="Task succeeded successfully.")
-        await ctx.send(embed=embed)
-          
 
 def setup(bot):
     bot.add_cog(Say(bot))
