@@ -5,7 +5,7 @@ from core.models import PermissionLevel
 import asyncio
 
 
-class Suggest(commands.Cog):
+class Say12(commands.Cog):
     """
     Let's you send a suggestion to a designated channel.
     """
