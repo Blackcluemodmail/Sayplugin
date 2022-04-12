@@ -58,7 +58,7 @@ class Say(commands.Cog):
                     suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
                     next_id = suggestions.get("next_id", 1)
 
-                    message = await suggestion_channel.send(suggestion=suggestion)
+                    message = await suggestion_channel.send(suggestion="suggestion")
                     await self.coll.find_one_and_update(
                         {"_id": "suggestions"},
                         {
