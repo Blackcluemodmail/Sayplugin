@@ -72,7 +72,7 @@ class Say(commands.Cog):
           
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
-    async def setsuggestchannel(self, ctx, *, channel: discord.TextChannel):
+    async def setsaychannel(self, ctx, *, channel: discord.TextChannel):
         """
         Set the channel where suggestions go.
 
