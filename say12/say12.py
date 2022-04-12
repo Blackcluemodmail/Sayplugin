@@ -41,6 +41,8 @@ class Suggest(commands.Cog):
         **Usage**:
         [p]suggest more plugins!
         """
+            if str(ctx.author.id) not in self.banlist:
+            async with ctx.channel.typing():
                 config = await self.coll.find_one({"_id": "config"})
                 if config is None:
                     embed = discord.Embed(
@@ -68,20 +70,6 @@ class Suggest(commands.Cog):
                         upsert=True,
                     )
                     
-    @commands.command()
-    @checks.has_permissions(PermissionLevel.ADMIN)
-    async def suggestchannel(self, ctx):
-        """Displays the suggestion channel."""
-        config = await self.coll.find_one({"_id": "config"})
-        suggestion_channel = self.bot.get_channel(
-            int(config["suggestion-channel"]["channel"])
-        )
-        embed = discord.Embed(
-            title=f"The suggestion channel is: #{suggestion_channel}",
-            description="To change it, use [p]setsuggestchannel.",
-            color=0x4DFF73,
-        )
-        await ctx.send(embed=embed)
-
+   
 def setup(bot):
     bot.add_cog(Suggest(bot))
