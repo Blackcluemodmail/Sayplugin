@@ -5,7 +5,7 @@ from core.models import PermissionLevel
 import asyncio
 
 
-class Say12(commands.Cog):
+class Say(commands.Cog):
     """
     Let's you send a suggestion to a designated channel.
     """
@@ -95,4 +95,4 @@ class Say12(commands.Cog):
           
 
 def setup(bot):
-    bot.add_cog(Say12(bot))
+    bot.add_cog(Say(bot))
