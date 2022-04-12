@@ -34,7 +34,7 @@ class Say(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 20, commands.BucketType.member)
     @checks.has_permissions(PermissionLevel.REGULAR)
-    async def say12(self, ctx, *, reason=None):
+    async def say12(self, ctx, *, suggestion=None):
         """
         Suggest something!
 
@@ -58,7 +58,7 @@ class Say(commands.Cog):
                     suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
                     next_id = suggestions.get("next_id", 1)
 
-                    message = await suggestion_channel.send(reason=reason)
+                    message = await suggestion_channel.send(value=suggestion, inline=False)
                     await self.coll.find_one_and_update(
                         {"_id": "suggestions"},
                         {
