@@ -67,14 +67,21 @@ class Suggest(commands.Cog):
                         },
                         upsert=True,
                     )
-                    re = config.get("reaction-emojis")
-                    if re:
-                        for r in re.get("emojis", []):
-                            await message.add_reaction(
-                                discord.utils.get(message.guild.emojis, id=r)
-                            )
-                            await asyncio.sleep(0.1)
-                    await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+                    
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def suggestchannel(self, ctx):
+        """Displays the suggestion channel."""
+        config = await self.coll.find_one({"_id": "config"})
+        suggestion_channel = self.bot.get_channel(
+            int(config["suggestion-channel"]["channel"])
+        )
+        embed = discord.Embed(
+            title=f"The suggestion channel is: #{suggestion_channel}",
+            description="To change it, use [p]setsuggestchannel.",
+            color=0x4DFF73,
+        )
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Suggest(bot))
