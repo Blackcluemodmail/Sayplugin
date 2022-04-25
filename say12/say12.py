@@ -33,7 +33,7 @@ class Say(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.REGULAR)
-    async def saygen(self, ctx, *, message):
+    async def sg(self, ctx, *, message): # send message in general chat
         if str(ctx.author.id) not in self.banlist:
             async with ctx.channel.typing():
                 config = await self.coll.find_one({"_id": "config"})
@@ -65,7 +65,7 @@ class Say(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
-    async def gcset(self, ctx, *, channel: discord.TextChannel):
+    async def gcset(self, ctx, *, channel: discord.TextChannel): # set general chann
         await self.coll.find_one_and_update(
             {"_id": "config"},
             {"$set": {"suggestion-channel": {"channel": str(channel.id)}}},
@@ -74,7 +74,7 @@ class Say(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.REGULAR)
-    async def sayguide(self, ctx, *, message):
+    async def sgd(self, ctx, *, message): # send message in server modmail guide
         if str(ctx.author.id) not in self.banlist:
             async with ctx.channel.typing():
                 config = await self.coll.find_one({"_id": "config"})
@@ -106,12 +106,95 @@ class Say(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
-    async def gdcset(self, ctx, *, channel: discord.TextChannel):
+    async def gdcset(self, ctx, *, channel: discord.TextChannel): # set guide channel
         await self.coll.find_one_and_update(
             {"_id": "config"},
             {"$set": {"guide-channel": {"channel": str(channel.id)}}},
             upsert=True,
         )
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def smgd(self, ctx, *, message): # send message in minecraft guide channel
+        if str(ctx.author.id) not in self.banlist:
+            async with ctx.channel.typing():
+                config = await self.coll.find_one({"_id": "config"})
+                if config is None:
+                    embed = discord.Embed(
+                        title="general channel not set.", color=self.bot.error_color
+                    )
+                    embed.set_author(name="Error.")
+                    embed.set_footer(text="Task failed successfully.")
+                    await ctx.send(embed=embed)
+                else:
+                    mguide_channel = self.bot.get_channel(
+                        int(config["minecraftguide-channel"]["channel"])
+                    )
+                    suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
+                    next_id = suggestions.get("next_id", 1)
+
+                    msg = await mguide_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    await self.coll.find_one_and_update(
+                        {"_id": "suggestions"},
+                        {
+                            "$set": {
+                                "next_id": next_id + 1,
+                                str(next_id): {"msg_id": msg.id,},
+                            }
+                        },
+                        upsert=True,
+                    )
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def mgdcset(self, ctx, *, channel: discord.TextChannel): # set minecraft guide channel
+        await self.coll.find_one_and_update(
+            {"_id": "config"},
+            {"$set": {"minecraftguide-channel": {"channel": str(channel.id)}}},
+            upsert=True,
+        )
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def ssc(self, ctx, *, message): # send message in modmail setup channel
+        if str(ctx.author.id) not in self.banlist:
+            async with ctx.channel.typing():
+                config = await self.coll.find_one({"_id": "config"})
+                if config is None:
+                    embed = discord.Embed(
+                        title="general channel not set.", color=self.bot.error_color
+                    )
+                    embed.set_author(name="Error.")
+                    embed.set_footer(text="Task failed successfully.")
+                    await ctx.send(embed=embed)
+                else:
+                    setup_channel = self.bot.get_channel(
+                        int(config["setup-channel"]["channel"])
+                    )
+                    suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
+                    next_id = suggestions.get("next_id", 1)
+
+                    msg = await setip_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    await self.coll.find_one_and_update(
+                        {"_id": "suggestions"},
+                        {
+                            "$set": {
+                                "next_id": next_id + 1,
+                                str(next_id): {"msg_id": msg.id,},
+                            }
+                        },
+                        upsert=True,
+                    )
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def scset(self, ctx, *, channel: discord.TextChannel): # modmail setup channel h.. 
+        await self.coll.find_one_and_update(
+            {"_id": "config"},
+            {"$set": {"setup-channel": {"channel": str(channel.id)}}},
+            upsert=True,
+        )
+
 
 def setup(bot):
     bot.add_cog(Say(bot))
