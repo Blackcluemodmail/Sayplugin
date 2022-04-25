@@ -45,18 +45,30 @@ class Say(commands.Cog):
                     embed.set_footer(text="Task failed successfully.")
                     await ctx.send(embed=embed)
                 else:
-                    generalchannel = self.bot.get_channel(
-                        int(config["general-channel"]["channel"])
+                    suggestion_channel = self.bot.get_channel(
+                        int(config["suggestion-channel"]["channel"])
+                    )
+                   suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
+                    next_id = suggestions.get("next_id", 1)
+
+                    msg = await suggestion_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    await self.coll.find_one_and_update(
+                        {"_id": "suggestions"},
+                        {
+                            "$set": {
+                                "next_id": next_id + 1,
+                                str(next_id): {"msg_id": msg.id,},
+                            }
+                        },
+                        upsert=True,
                     )
 
-                    msg = await generalchannel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
-          
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
     async def gcset(self, ctx, *, channel: discord.TextChannel):
         await self.coll.find_one_and_update(
             {"_id": "config"},
-            {"$set": {"general-channel": {"channel": str(channel.id)}}},
+            {"$set": {"suggestion-channel": {"channel": str(channel.id)}}},
             upsert=True,
         )
 
