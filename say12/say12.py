@@ -35,55 +35,29 @@ class Say(commands.Cog):
     @commands.cooldown(1, 20, commands.BucketType.member)
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def say12(self, ctx, *, message):
-        """
-        Suggest something!
-
-        **Usage**:
-        [p]suggest more plugins!
-        """
         if str(ctx.author.id) not in self.banlist:
             async with ctx.channel.typing():
                 config = await self.coll.find_one({"_id": "config"})
                 if config is None:
                     embed = discord.Embed(
-                        title="Suggestion channel not set.", color=self.bot.error_color
+                        title="general channel not set.", color=self.bot.error_color
                     )
                     embed.set_author(name="Error.")
                     embed.set_footer(text="Task failed successfully.")
                     await ctx.send(embed=embed)
                 else:
-                    suggestion_channel = self.bot.get_channel(
-                        int(config["suggestion-channel"]["channel"])
+                    general_channel = self.bot.get_channel(
+                        int(config["general-channel"]["channel"])
                     )
-                    suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
-                    next_id = suggestions.get("next_id", 1)
 
-                    msg = await suggestion_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
-                    await self.coll.find_one_and_update(
-                        {"_id": "suggestions"},
-                        {
-                            "$set": {
-                                "next_id": next_id + 1,
-                                str(next_id): {"msg_id": msg.id,},
-                            }
-                        },
-                        upsert=True,
-                    )
+                    msg = await general_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
           
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
-    async def syc(self, ctx, *, channel: discord.TextChannel):
-        """
-        Set the channel where suggestions go.
-
-        **Usage**:
-        [p]setsuggestchannel #suggestions
-        [p]ssc suggestions
-        [p]ssc 515085600047628288
-        """
+    async def gcset(self, ctx, *, channel: discord.TextChannel):
         await self.coll.find_one_and_update(
             {"_id": "config"},
-            {"$set": {"suggestion-channel": {"channel": str(channel.id)}}},
+            {"$set": {"general-channel": {"channel": str(channel.id)}}},
             upsert=True,
         )
 
