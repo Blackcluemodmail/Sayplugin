@@ -7,7 +7,7 @@ import asyncio
 
 class Say(commands.Cog):
     """
-    Let's you send a suggestion to a designated channel.
+    Let's you send a message to a designated channel.
     """
 
     def __init__(self, bot):
@@ -32,7 +32,6 @@ class Say(commands.Cog):
         self.banlist = mod["banlist"]
 
     @commands.command()
-    @commands.cooldown(1, 20, commands.BucketType.member)
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def say12(self, ctx, *, message):
         if str(ctx.author.id) not in self.banlist:
@@ -46,11 +45,11 @@ class Say(commands.Cog):
                     embed.set_footer(text="Task failed successfully.")
                     await ctx.send(embed=embed)
                 else:
-                    general_channel = self.bot.get_channel(
+                    generalchannel = self.bot.get_channel(
                         int(config["general-channel"]["channel"])
                     )
 
-                    msg = await general_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    msg = await generalchannel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
           
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
