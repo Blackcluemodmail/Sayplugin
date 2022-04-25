@@ -45,10 +45,10 @@ class Say(commands.Cog):
                     embed.set_footer(text="Task failed successfully.")
                     await ctx.send(embed=embed)
                 else:
-                     suggestion_channel = self.bot.get_channel(
+                    suggestion_channel = self.bot.get_channel(
                         int(config["suggestion-channel"]["channel"])
                     )
-                   suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
+                    suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
                     next_id = suggestions.get("next_id", 1)
 
                     msg = await suggestion_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
