@@ -195,7 +195,7 @@ class Say(commands.Cog):
             upsert=True,
         )
 
-@commands.command()
+    @commands.command()
     @checks.has_permissions(PermissionLevel.REGULAR)
     async def sml(self, ctx, *, message): # send message in minecraft guide channel
         if str(ctx.author.id) not in self.banlist:
