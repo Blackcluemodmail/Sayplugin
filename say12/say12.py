@@ -195,6 +195,48 @@ class Say(commands.Cog):
             upsert=True,
         )
 
+@commands.command()
+    @checks.has_permissions(PermissionLevel.REGULAR)
+    async def sml(self, ctx, *, message): # send message in minecraft guide channel
+        if str(ctx.author.id) not in self.banlist:
+            async with ctx.channel.typing():
+                config = await self.coll.find_one({"_id": "config"})
+                if config is None:
+                    embed = discord.Embed(
+                        title="general channel not set.", color=self.bot.error_color
+                    )
+                    embed.set_author(name="Error.")
+                    embed.set_footer(text="Task failed successfully.")
+                    await ctx.send(embed=embed)
+                else:
+                    mlog_channel = self.bot.get_channel(
+                        int(config["minecraftlog-channel"]["channel"])
+                    )
+                    suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
+                    next_id = suggestions.get("next_id", 1)
+
+                    msg = await mguide_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    await self.coll.find_one_and_update(
+                        {"_id": "suggestions"},
+                        {
+                            "$set": {
+                                "next_id": next_id + 1,
+                                str(next_id): {"msg_id": msg.id,},
+                            }
+                        },
+                        upsert=True,
+                    )
+
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def mlset(self, ctx, *, channel: discord.TextChannel): # set minecraft guide channel
+        await self.coll.find_one_and_update(
+            {"_id": "config"},
+            {"$set": {"minecraftlog-channel": {"channel": str(channel.id)}}},
+            upsert=True,
+        )
+        await ctx.send("Successfully completed the operation") 
 
 def setup(bot):
     bot.add_cog(Say(bot))
+
