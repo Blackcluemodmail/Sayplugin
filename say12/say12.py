@@ -215,7 +215,7 @@ class Say(commands.Cog):
                     suggestions = await self.coll.find_one({"_id": "suggestions"}) or {}
                     next_id = suggestions.get("next_id", 1)
 
-                    msg = await mguide_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+                    msg = await m log hi_channel.send(message.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
                     await self.coll.find_one_and_update(
                         {"_id": "suggestions"},
                         {
