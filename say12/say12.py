@@ -235,7 +235,7 @@ class Say(commands.Cog):
             {"$set": {"minecraftlog-channel": {"channel": str(channel.id)}}},
             upsert=True,
         )
-        await ctx.send("Successfully completed the operation") 
+        await ctx.send("Successfully completed the operation", delete_after=5) 
 
 def setup(bot):
     bot.add_cog(Say(bot))
